@@ -1,0 +1,21 @@
+name = "mermaid-renderer"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Browser rendering requires a paid Workers plan
+browser = { binding = "BROWSER" }
+
+# Custom domain
+routes = [
+  { pattern = "diagrama.app", custom_domain = true },
+  { pattern = "www.diagrama.app", custom_domain = true }
+]
+
+# Serve static assets from /public
+[site]
+bucket = "./public"
+
+# Optional: Add caching
+# [vars]
+# CACHE_TTL = "86400"
