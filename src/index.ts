@@ -109,18 +109,33 @@ export default {
       return serveStaticHtml();
     }
 
+    // CORS headers for API responses
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+
+    // Handle OPTIONS preflight for /api/encode
+    if (path === "/api/encode" && request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
     // API endpoint to encode mermaid code
     if (path === "/api/encode" && request.method === "POST") {
       const body = await request.json<{ code: string }>();
       const cleanCode = cleanMermaidCode(body.code);
       const encoded = encodeBase64(cleanCode);
       const baseUrl = url.origin;
-      return Response.json({
-        encoded,
-        cleanedCode: cleanCode,
-        svgUrl: `${baseUrl}/mermaid/svg/${encoded}`,
-        pngUrl: `${baseUrl}/mermaid/png/${encoded}`,
-      });
+      return Response.json(
+        {
+          encoded,
+          cleanedCode: cleanCode,
+          svgUrl: `${baseUrl}/mermaid/svg/${encoded}`,
+          pngUrl: `${baseUrl}/mermaid/png/${encoded}`,
+        },
+        { headers: corsHeaders }
+      );
     }
 
     // Mermaid rendering endpoint: /mermaid/{format}/{encoded}
