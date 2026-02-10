@@ -214,13 +214,16 @@ async function renderMermaid(
 
     if (format === "svg") {
       // Extract SVG content
-      const svgContent = await page.evaluate(() => {
+      let svgContent = await page.evaluate(() => {
         const svg = document.querySelector("#container svg");
         return svg ? svg.outerHTML : null;
       });
       if (!svgContent) {
         throw new Error("SVG not found");
       }
+      // Ensure XML compliance: convert HTML-style void elements to self-closing
+      // SVG is XML and requires properly closed tags
+      svgContent = svgContent.replace(/<br\s*>/gi, "<br/>");
       return svgContent;
     } else {
       // Take PNG screenshot
